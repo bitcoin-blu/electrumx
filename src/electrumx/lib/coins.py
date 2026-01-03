@@ -818,6 +818,32 @@ class BitcoinGold(EquihashMixin, BitcoinMixin, Coin):
             return double_sha256(header[:68] + header[100:112])
 
 
+class BitcoinBlu(BitcoinMixin, Coin):
+    NAME = "BitcoinBlu"
+    SHORTNAME = "BBLU"
+    NET = "main-blu"
+    RPC_PORT = 8342
+    # Address prefixes
+    P2PKH_VERBYTE = bytes.fromhex("19")  # "B" in base58 (0x19)
+    P2SH_VERBYTES = (bytes.fromhex("56"),)  # "b" in base58 (0x56)
+    # Extended key prefixes
+    XPUB_VERBYTES = bytes.fromhex("0488b31f")
+    XPRV_VERBYTES = bytes.fromhex("0488afe5")
+    # WIF prefix (SECRET_KEY from BitcoinBLU source: 0xbc = 188)
+    # Both compressed and uncompressed use the same prefix (0xbc)
+    # Compressed WIF appends 0x01, which produces "U" in base58
+    # Uncompressed WIF produces "7" in base58
+    WIF_BYTE = bytes.fromhex("bc")  # SECRET_KEY = 0xbc (188 decimal)
+    # Genesis block hash
+    GENESIS_HASH = '0000000043770b6cd3992ee9602eaa941d8a5de392c1f1baf1f55eb9cd898be6'
+    # Transaction and block statistics (from BitcoinBLU chain)
+    TX_COUNT = 53697
+    TX_COUNT_HEIGHT = 46094
+    TX_PER_BLOCK = 2
+    # Use standard Bitcoin deserializer (assuming same block format)
+    DESERIALIZER = lib_tx.DeserializerSegWit
+
+
 class BitcoinGoldTestnet(BitcoinGold):
     FORK_HEIGHT = 1
     SHORTNAME = "TBTG"
