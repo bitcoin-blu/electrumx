@@ -1,0 +1,42 @@
+# Development Dockerfile for ElectrumX
+# Based on the CI configuration (.cirrus.yml) using debian:trixie
+
+FROM debian:trixie
+
+# Install system dependencies
+RUN apt-get -qq update && \
+    apt-get install -yq --no-install-recommends \
+        git \
+        python3 \
+        python3-pip \
+        python3-setuptools \
+        python3-venv \
+        libsnappy-dev \
+        zlib1g-dev \
+        libbz2-dev \
+        libgflags-dev \
+        liblz4-dev \
+        librocksdb-dev \
+        libleveldb-dev \
+        libboost-all-dev \
+        libsodium-dev \
+        build-essential \
+        && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /workspace
+
+# Set environment variables
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
+ENV PYTHONUNBUFFERED=1
+
+# Create a non-root user for development
+RUN useradd -m -s /bin/bash developer && \
+    chown -R developer:developer /workspace
+
+# Switch to non-root user
+USER developer
+
+# Default command (can be overridden)
+CMD ["/bin/bash"]
+

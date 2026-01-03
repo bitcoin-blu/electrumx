@@ -1,0 +1,33 @@
+services:
+  electrumx-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: electrumx-dev
+    volumes:
+      # Mount the source code
+      - .:/workspace
+      # Persist pip cache
+      - pip-cache:/home/developer/.cache/pip
+      # Optional: mount a directory for database storage
+      - electrumx-db:/var/lib/electrumx
+    environment:
+      - PIP_BREAK_SYSTEM_PACKAGES=1
+      - PYTHONUNBUFFERED=1
+    # Keep container running
+    stdin_open: true
+    tty: true
+    # Network mode for accessing host services (like bitcoind)
+    network_mode: host
+    # Resource limits (optional)
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+
+volumes:
+  pip-cache:
+  electrumx-db:
+
