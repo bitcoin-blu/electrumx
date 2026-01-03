@@ -68,6 +68,47 @@ case "${1:-}" in
   logs)
     docker-compose logs -f electrumx-dev
     ;;
+  server|run)
+    echo -e "${BLUE}Starting ElectrumX server...${NC}"
+    if [ ! -f .env ]; then
+      echo -e "${BLUE}Warning: .env file not found. Creating from .env.example...${NC}"
+      if [ -f .env.example ]; then
+        cp .env.example .env
+        echo -e "${GREEN}.env file created. Please edit it with your configuration.${NC}"
+        echo -e "${BLUE}Edit .env and run './docker-dev.sh server' again.${NC}"
+        exit 1
+      else
+        echo -e "${BLUE}Error: .env.example not found. Please create .env manually.${NC}"
+        exit 1
+      fi
+    fi
+    docker-compose exec electrumx-dev bash -c "
+      cd /workspace && \
+      source venv/bin/activate && \
+      electrumx_server
+    "
+    ;;
+  server-bg|run-bg)
+    echo -e "${BLUE}Starting ElectrumX server in background...${NC}"
+    if [ ! -f .env ]; then
+      echo -e "${BLUE}Warning: .env file not found. Creating from .env.example...${NC}"
+      if [ -f .env.example ]; then
+        cp .env.example .env
+        echo -e "${GREEN}.env file created. Please edit it with your configuration.${NC}"
+        echo -e "${BLUE}Edit .env and run './docker-dev.sh server-bg' again.${NC}"
+        exit 1
+      else
+        echo -e "${BLUE}Error: .env.example not found. Please create .env manually.${NC}"
+        exit 1
+      fi
+    fi
+    docker-compose exec -d electrumx-dev bash -c "
+      cd /workspace && \
+      source venv/bin/activate && \
+      electrumx_server
+    "
+    echo -e "${GREEN}Server started in background. Use './docker-dev.sh logs' to view output.${NC}"
+    ;;
   clean)
     echo -e "${BLUE}Cleaning up Docker resources...${NC}"
     docker-compose down -v
@@ -88,6 +129,8 @@ case "${1:-}" in
     echo "  test       - Run the test suite"
     echo "  install    - Install Python packages (pass packages as arguments)"
     echo "  logs       - View container logs"
+    echo "  server|run - Run ElectrumX server (foreground)"
+    echo "  server-bg  - Run ElectrumX server (background)"
     echo "  clean      - Clean up Docker resources"
     echo ""
     echo "Example workflow:"

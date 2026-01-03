@@ -17,3 +17,6 @@
 /src/e_x.egg-info/
 /electrumx.egg-info/
 /e_x.egg-info/
+
+# ElectrumX server configuration (contains sensitive data)
+.env
